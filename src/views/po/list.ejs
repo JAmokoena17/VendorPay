@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PO List - VendorPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="page-wrapper">
+  <div class="page-container">
+    <div class="page-card">
+      <div class="page-header">
+        <h1>📋 Purchase Orders</h1>
+        <a href="/po/create" class="btn-primary">+ Create New PO</a>
+      </div>
+      <hr>
+
+      <% if (pos && pos.length > 0) { %>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>PO #</th>
+                <th>Vendor</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pos.forEach(po => { %>
+                <tr>
+                  <td><strong><%= po.po_number %></strong></td>
+                  <td><%= po.vendor %></td>
+                  <td><%= po.issue_date %></td>
+                  <td>R <%= parseFloat(po.total_amount).toFixed(2) %></td>
+                  <td><span class="badge badge-active">Active</span></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <p>
+            No Purchase Orders created yet.
+            <br><br>
+            <a href="/po/create">Create your first PO →</a>
+          </p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

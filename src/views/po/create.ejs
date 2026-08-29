@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create PO - VendorPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="page-wrapper">
+  <div class="page-container">
+    <div class="page-card">
+      <div class="page-header">
+        <h1>📄 Create Purchase Order</h1>
+      </div>
+      <a href="/po/list" class="back-link">← Back to list</a>
+      <hr>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <form action="/po/create" method="POST" class="form-container">
+        <div class="form-group">
+          <label for="po_number">PO Number</label>
+          <input type="text" id="po_number" name="po_number" placeholder="PO-001" required>
+        </div>
+        <div class="form-group">
+          <label for="vendor">Vendor</label>
+          <input type="text" id="vendor" name="vendor" placeholder="ABC Supplies" required>
+        </div>
+        <div class="form-group">
+          <label for="issue_date">Issue Date</label>
+          <input type="date" id="issue_date" name="issue_date" required>
+        </div>
+        <div class="form-group">
+          <label for="total_amount">Total Amount</label>
+          <input type="number" id="total_amount" step="0.01" name="total_amount" placeholder="1500.00" required>
+        </div>
+        <div class="form-group">
+          <label for="tax">Tax</label>
+          <input type="number" id="tax" step="0.01" name="tax" placeholder="150.00" required>
+        </div>
+        <button type="submit" class="btn-primary">Create PO</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
