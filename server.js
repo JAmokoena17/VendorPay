@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
-
+import poRoutes from './src/routes/poRoutes.js';
+import invoiceRoutes from './src/routes/invoiceRoutes.js';
+import dashboardRoutes from './src/routes/dashboardRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 import { verifyToken } from './src/middleware/auth.js';
 
@@ -32,11 +34,9 @@ app.set('views', path.join(__dirname, 'src/views'));
 
 // Routes
 app.use('/', authRoutes);
-
-// Protected dashboard (test)
-app.get('/dashboard', verifyToken, (req, res) => {
-  res.send(`Welcome ${req.user.email}! You are logged in. Role: ${req.user.role}`);
-});
+app.use('/', dashboardRoutes);
+app.use('/', poRoutes);
+app.use('/invoice', invoiceRoutes);
 
 // Home
 app.get('/', (req, res) => {
@@ -44,5 +44,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 VendorPay running at http://localhost:${PORT}`);
+  console.log(` VendorPay running at http://localhost:${PORT}`);
 });

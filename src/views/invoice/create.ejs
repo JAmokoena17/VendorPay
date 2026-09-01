@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Invoice - VendorPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .invoice-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f5f3 0%, #d4ede8 100%);
+      padding: 2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .invoice-container {
+      width: 100%;
+      max-width: 700px;
+    }
+    .invoice-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .invoice-header h1 {
+      font-size: 2rem;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    .back-link {
+      color: #1b7d7d;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .back-link:hover {
+      color: #0d5959;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .form-grid-full {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .invoice-card .btn-primary {
+      background: #1b7d7d !important;
+    }
+    .invoice-card .btn-primary:hover {
+      background: #0d5959 !important;
+    }
+    .invoice-card .form-group input:focus,
+    .invoice-card .form-group select:focus {
+      border-color: #1b7d7d;
+      box-shadow: 0 0 0 3px rgba(27, 125, 125, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-page">
+    <div class="invoice-container">
+      <div class="invoice-card">
+        <div style="margin-bottom: 1rem;">
+          <a href="/dashboard" style="color:#1b7d7d; text-decoration:none; font-weight:500;">← Dashboard</a>
+        </div>
+        <div class="invoice-header">
+          <h1>🧾 Create Invoice</h1>
+          <a href="/invoice/list" class="back-link">← Back</a>
+        </div>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <form action="/invoice/create" method="POST">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Invoice Number</label>
+            <input type="text" name="invoice_number" placeholder="INV-001" required>
+          </div>
+          <div class="form-group">
+            <label>Invoice Date</label>
+            <input type="date" name="invoice_date" required>
+          </div>
+          <div class="form-group">
+            <label>Purchase Order</label>
+            <select name="po_id" required>
+              <option value="">Select a PO</option>
+              <% pos.forEach(po => { %>
+                <option value="<%= po.id %>"><%= po.po_number %> - <%= po.vendor %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Vendor</label>
+            <input type="text" name="vendor" placeholder="ABC Supplies" required>
+          </div>
+          <div class="form-group">
+            <label>Total Amount</label>
+            <input type="number" step="0.01" name="total_amount" placeholder="1500.00" required>
+          </div>
+          <div class="form-group">
+            <label>VAT</label>
+            <input type="number" step="0.01" name="vat" placeholder="150.00" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="background: #1b7d7d; margin-top: 2rem;">Create Invoice</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

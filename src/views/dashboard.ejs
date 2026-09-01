@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard - VendorPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .dashboard-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f5f3 0%, #d4ede8 100%);
+      padding: 2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      max-width: 600px;
+      width: 100%;
+    }
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+    .dashboard-header h1 {
+      font-size: 2rem;
+      color: #1a1a2e;
+      margin: 0 0 0.5rem 0;
+    }
+    .dashboard-header p {
+      color: #6b7280;
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+    .dashboard-header p:last-child {
+      margin-bottom: 1.5rem;
+    }
+    .dashboard-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .dashboard-link {
+      background: #1b7d7d;
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      text-align: center;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(27, 125, 125, 0.3);
+      box-shadow: 0 2px 8px rgba(27, 125, 125, 0.1);
+    }
+    .dashboard-link:hover {
+      background: #0d5959;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(27, 125, 125, 0.2);
+    }
+    .dashboard-link h2 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+    .dashboard-link p {
+      font-weight: 600;
+      margin: 0.5rem 0 0 0;
+    }
+    .dashboard-footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+    .logout-link {
+      color: #dc2626;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .logout-link:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .dashboard-links {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-page">
+    <div class="dashboard-card">
+      <div class="dashboard-header">
+        <h1>📊 Dashboard</h1>
+        <p>Welcome back, <strong><%= user.name %></strong>!</p>
+        <p style="color:#9ca3af; font-size:0.9rem; margin-top: 0.5rem;">Role: <span style="color:#1b7d7d; font-weight:600;"><%= user.role %></span></p>
+      </div>
+
+      <div class="dashboard-links">
+        <a href="/po/list" class="dashboard-link">
+          <h2>📄</h2>
+          <p>Purchase Orders</p>
+        </a>
+        <a href="/invoice/list" class="dashboard-link">
+          <h2>🧾</h2>
+          <p>Invoices</p>
+        </a>
+      </div>
+
+      <div class="dashboard-footer">
+        <a href="/logout" class="logout-link">Logout</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

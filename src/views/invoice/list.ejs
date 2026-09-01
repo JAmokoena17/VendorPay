@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice List - VendorPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .invoice-list-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f5f3 0%, #d4ede8 100%);
+      padding: 2rem 1rem;
+    }
+    .invoice-list-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .invoice-list-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .invoice-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .invoice-list-header h1 {
+      font-size: 2rem;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    .btn-create {
+      background: #1b7d7d;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-create:hover {
+      background: #0d5959;
+    }
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+    .invoice-table thead {
+      background: #1b7d7d;
+      color: white;
+    }
+    .invoice-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .invoice-table tbody tr {
+      border-bottom: 1px solid #e5e7eb;
+      transition: background 0.2s;
+    }
+    .invoice-table tbody tr:hover {
+      background: #f0fffe;
+    }
+    .invoice-table td {
+      padding: 1.25rem 1rem;
+      color: #1a1a2e;
+    }
+    .invoice-number {
+      font-weight: 700;
+      color: #1b7d7d;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #d4f0ed;
+      color: #0d5959;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .empty-state p {
+      color: #6b7280;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .empty-state a {
+      color: #1b7d7d;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .empty-state a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .invoice-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .invoice-table th,
+      .invoice-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-list-page">
+    <div class="invoice-list-container">
+      <div class="invoice-list-card">
+        <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="/dashboard" style="color:#1b7d7d; text-decoration:none; font-weight:500;">← Dashboard</a>
+          <span style="color:#e5e7eb;">|</span>
+          <a href="/po/list" style="color:#1b7d7d; text-decoration:none; font-weight:500;">View POs</a>
+        </div>
+        <div class="invoice-list-header">
+          <h1>🧾 Invoices</h1>
+          <a href="/invoice/create" class="btn-create">+ Create Invoice</a>
+        </div>
+
+      <% if (invoices && invoices.length > 0) { %>
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>PO #</th>
+              <th>Vendor</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% invoices.forEach(inv => { %>
+              <tr>
+                <td><span class="invoice-number"><%= inv.invoice_number %></span></td>
+                <td><%= inv.purchase_orders ? inv.purchase_orders.po_number : 'N/A' %></td>
+                <td><%= inv.vendor %></td>
+                <td><%= new Date(inv.invoice_date).toLocaleDateString() %></td>
+                <td><strong>R <%= parseFloat(inv.total_amount).toFixed(2) %></strong></td>
+                <td><span class="status-badge"><%= inv.status || 'Pending' %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty-state">
+          <p>📭 No Invoices created yet</p>
+          <p style="color:#9ca3af; font-size:0.95rem; margin-bottom: 2rem;">Start by creating your first invoice</p>
+          <a href="/invoice/create">Create your first Invoice →</a>
+        </div>
+      <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
