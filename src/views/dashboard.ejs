@@ -103,13 +103,24 @@
       </div>
 
       <div class="dashboard-links">
+        <% if (user.role === 'procurement' || user.role === 'finance_admin') { %>
+          <a href="/po/create" class="dashboard-link">
+            <h2>📝</h2>
+            <p>Create PO</p>
+          </a>
+          <a href="/invoice/create" class="dashboard-link">
+            <h2>🧾</h2>
+            <p>Create Invoice</p>
+          </a>
+        <% } %>
+
         <a href="/po/list" class="dashboard-link">
           <h2>📄</h2>
-          <p>Purchase Orders</p>
+          <p>View POs</p>
         </a>
         <a href="/invoice/list" class="dashboard-link">
           <h2>🧾</h2>
-          <p>Invoices</p>
+          <p>View Invoices</p>
         </a>
       </div>
 

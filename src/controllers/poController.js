@@ -46,5 +46,5 @@ export const listPOs = async (req, res) => {
     return res.send('Error loading POs');
   }
 
-  res.render('po/list', { pos });
+  res.render('po/list', { pos, user: req.user });
 };

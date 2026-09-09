@@ -111,5 +111,5 @@ export const listInvoices = async (req, res) => {
     .order('created_at', { ascending: false });
 
   if (error) return res.send('Error loading invoices');
-  res.render('invoice/list', { invoices });
+  res.render('invoice/list', { invoices, user: req.user });
 };

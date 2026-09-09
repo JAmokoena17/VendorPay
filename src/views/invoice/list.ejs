@@ -10,7 +10,9 @@
     <div class="auth-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h1>🧾 Invoices</h1>
-        <a href="/invoice/create" style="background:#4f46e5; color:white; padding:10px 20px; border-radius:8px; text-decoration:none;">+ Create New Invoice</a>
+        <% if (user && (user.role === 'procurement' || user.role === 'finance_admin')) { %>
+          <a href="/invoice/create" style="background:#4f46e5; color:white; padding:10px 20px; border-radius:8px; text-decoration:none;">+ Create New Invoice</a>
+        <% } %>
       </div>
 
       <hr>
@@ -40,12 +42,16 @@
               </td>
               <td style="padding:12px;">
                 <% if (inv.approval_status === 'pending' || !inv.approval_status) { %>
-                  <form action="/invoice/<%= inv.id %>/approve" method="POST" style="display:inline;">
-                    <button type="submit" style="background:#059669; color:white; border:none; padding:5px 12px; border-radius:5px; cursor:pointer;">Approve</button>
-                  </form>
-                  <form action="/invoice/<%= inv.id %>/reject" method="POST" style="display:inline;">
-                    <button type="submit" style="background:#dc2626; color:white; border:none; padding:5px 12px; border-radius:5px; cursor:pointer;">Reject</button>
-                  </form>
+                  <% if (user && (user.role === 'approver' || user.role === 'finance_admin')) { %>
+                    <form action="/invoice/<%= inv.id %>/approve" method="POST" style="display:inline;">
+                      <button type="submit" style="background:#059669; color:white; border:none; padding:5px 12px; border-radius:5px; cursor:pointer;">Approve</button>
+                    </form>
+                    <form action="/invoice/<%= inv.id %>/reject" method="POST" style="display:inline;">
+                      <button type="submit" style="background:#dc2626; color:white; border:none; padding:5px 12px; border-radius:5px; cursor:pointer;">Reject</button>
+                    </form>
+                  <% } else { %>
+                    <span style="color:#6b7280; font-size:0.8rem;">Pending Review</span>
+                  <% } %>
                 <% } else { %>
                   <span style="color:#6b7280; font-size:0.8rem;">Done</span>
                 <% } %>

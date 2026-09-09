@@ -17,7 +17,9 @@
       </div>
       <div class="page-header">
         <h1> Purchase Orders</h1>
-        <a href="/po/create" class="btn-primary">+ Create New PO</a>
+        <% if (user && (user.role === 'procurement' || user.role === 'finance_admin')) { %>
+          <a href="/po/create" class="btn-primary">+ Create New PO</a>
+        <% } %>
       </div>
       <hr>
 
@@ -50,8 +52,10 @@
         <div class="empty-state">
           <p>
             No Purchase Orders created yet.
-            <br><br>
-            <a href="/po/create">Create your first PO →</a>
+            <% if (user && (user.role === 'procurement' || user.role === 'finance_admin')) { %>
+              <br><br>
+              <a href="/po/create">Create your first PO →</a>
+            <% } %>
           </p>
         </div>
       <% } %>
