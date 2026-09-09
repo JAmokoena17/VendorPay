@@ -1,65 +1,115 @@
-import dotenv from 'dotenv/config';
-import {createClient} from '@supabase/supabase-js';
+import 'dotenv/config';
+import { createClient } from '@supabase/supabase-js';
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { extractInvoiceData } from '../utils/vision.js';
 
-const supabase=createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-//lets show the create invoice form
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-export const getCreateInvoice=async (req,res)=>{
-    //Get all form dropdown
-    const {data:pos,error}=await supabase
-    .from('purchase_orders')
-    .select('id,po_number,vendor');
-
-    if (error){
-        return res.send('Error loading purchase orders');
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images and PDFs allowed'));
     }
-    res.render('invoice/create',{pos,error:null});
+  },
+});
 
+export const getCreateInvoice = async (req, res) => {
+  const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+  res.render('invoice/create', { error: null, pos, extractedData: null });
 };
 
-// Handle invoice creation
-export const createInvoice=async (req,res)=>{
-    const {invoice_number,po_id,vendor,invoice_date,total_amount,vat}=req.body;
+export const createInvoice = async (req, res) => {
+  upload.single('invoice_file')(req, res, async (err) => {
+    if (err) {
+      const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+      return res.render('invoice/create', { error: err.message, pos, extractedData: null });
+    }
 
-    const {data,error}=await supabase
-    .from('invoices')
-    .insert([{
-        invoice_number,
+    const { invoice_number, po_id, vendor, invoice_date, total_amount, vat } = req.body;
+    let extractedData = null;
+    let fileUrl = null;
+
+    if (req.file) {
+      try {
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+        const cloudResult = await cloudinary.uploader.upload(dataURI, { folder: 'vendorpay/invoices' });
+        fileUrl = cloudResult.secure_url;
+
+        const result = await extractInvoiceData(fileUrl, req.file.mimetype);
+        if (result.error) {
+          const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+          return res.render('invoice/create', { error: result.error, pos, extractedData: null });
+        }
+        extractedData = result;
+      } catch (error) {
+        console.error('Invoice file processing error:', error);
+        const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+        return res.render('invoice/create', { error: 'File processing failed. Enter manually.', pos, extractedData: null });
+      }
+    }
+
+    const finalInvoiceNumber = invoice_number || extractedData?.invoiceNumber || '';
+    const { data: existing } = await supabase
+      .from('invoices')
+      .select('invoice_number')
+      .eq('invoice_number', finalInvoiceNumber)
+      .single();
+
+    if (existing) {
+      const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+      return res.render('invoice/create', {
+        error: `Invoice "${finalInvoiceNumber}" already exists!`,
+        pos,
+        extractedData,
+      });
+    }
+
+    const finalVendor = vendor || extractedData?.vendor || '';
+    const finalDate = invoice_date || extractedData?.date || null;
+    const finalTotal = total_amount || extractedData?.totalAmount || 0;
+    const finalVat = vat || extractedData?.vat || 0;
+
+    const { error: dbError } = await supabase.from('invoices').insert([
+      {
+        invoice_number: finalInvoiceNumber,
         po_id,
-        vendor,
-        invoice_date,
-        total_amount,
-        vat,
+        vendor: finalVendor,
+        invoice_date: finalDate,
+        total_amount: parseFloat(finalTotal) || 0,
+        vat: parseFloat(finalVat) || 0,
+        file_url: fileUrl,
+        uploaded_by: req.user.id,
+      },
+    ]);
 
-        uploaded_by:req.user.id
-
-    }])
-    if(error){
-        //reload form with POS
-        const {data:pos,error:posError}=await supabase
-        .from('purchase_orders')
-        .select('id,po_number,vendor')
-        return res.render('invoice/create',{pos, error:error.message});
+    if (dbError) {
+      const { data: pos } = await supabase.from('purchase_orders').select('id, po_number, vendor');
+      return res.render('invoice/create', { error: dbError.message, pos, extractedData });
     }
+
     res.redirect('/invoice/list');
-
-
+  });
 };
 
-//list all the invoices
-export const listInvoices= async (req,res)=>{
-    const {data:invoices,error}=await supabase
+export const listInvoices = async (req, res) => {
+  const { data: invoices, error } = await supabase
     .from('invoices')
     .select('*, purchase_orders(po_number)')
-    .order('created_at',{ascending:false});
+    .order('created_at', { ascending: false });
 
-    if(error){
-        return res.send('error loading invoices');
-    }
-    res.render('invoice/list',{invoices});
+  if (error) return res.send('Error loading invoices');
+  res.render('invoice/list', { invoices });
 };
-

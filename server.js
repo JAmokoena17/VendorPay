@@ -9,6 +9,7 @@ import invoiceRoutes from './src/routes/invoiceRoutes.js';
 import dashboardRoutes from './src/routes/dashboardRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 import { verifyToken } from './src/middleware/auth.js';
+import approvalRoutes from './src/routes/approvalRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,8 @@ app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', poRoutes);
 app.use('/invoice', invoiceRoutes);
+app.use('/', approvalRoutes);
+
 
 // Home
 app.get('/', (req, res) => {
